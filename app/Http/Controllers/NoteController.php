@@ -10,7 +10,8 @@ class NoteController extends Controller
     // সব নোট দেখাবে
     public function index()
     {
-        $notes = Note::latest()->get();
+        // $notes = Note::latest()->get();
+        $notes = Note::latest()->paginate(9); // পেজিনেশন সহ নোট দেখাবে
         return view('notes.index', compact('notes'));
     }
 

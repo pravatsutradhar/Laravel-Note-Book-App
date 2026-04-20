@@ -100,16 +100,62 @@
         margin-bottom: 20px;
         font-size: 14px;
     }
+
+
+    .pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 35px;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: white;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 14px;
+    border: 2px solid #ddd;
+    transition: all 0.2s;
+}
+
+.page-btn:hover {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+}
+
+.page-btn.active {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+    font-weight: bold;
+}
+
+.page-btn.disabled {
+    color: #ccc;
+    border-color: #eee;
+    cursor: not-allowed;
+}
+
 </style>
 
 <h1 class="page-title">📒 আমার সব নোট</h1>
 
-@if($notes->count() > 0)
+{{-- @if($notes->count() > 0)
     <p class="counter">মোট {{ $notes->count() }}টি নোট</p>
+@endif --}}
+
+
+@if($notes->total() > 0)
+    <p class="counter">
+        মোট {{ $notes->total() }}টি নোট |
+        পেজ {{ $notes->currentPage() }} / {{ $notes->lastPage() }}
+    </p>
 @endif
-
-
-
 
 @forelse($notes as $note)
     @if($loop->first)
@@ -144,5 +190,33 @@
         😊 এখনো কোনো নোট নেই। উপরে "নতুন নোট" বাটন চাপুন!
     </div>
 @endforelse
+
+{{-- Pagination --}}
+@if($notes->hasPages())
+<div class="pagination-wrapper">
+    {{-- আগের পেজ --}}
+    @if($notes->onFirstPage())
+        <span class="page-btn disabled">← আগে</span>
+    @else
+        <a href="{{ $notes->previousPageUrl() }}" class="page-btn">← আগে</a>
+    @endif
+
+    {{-- পেজ নম্বর --}}
+    @foreach($notes->getUrlRange(1, $notes->lastPage()) as $page => $url)
+        @if($page == $notes->currentPage())
+            <span class="page-btn active">{{ $page }}</span>
+        @else
+            <a href="{{ $url }}" class="page-btn">{{ $page }}</a>
+        @endif
+    @endforeach
+
+    {{-- পরের পেজ --}}
+    @if($notes->hasMorePages())
+        <a href="{{ $notes->nextPageUrl() }}" class="page-btn">পরে →</a>
+    @else
+        <span class="page-btn disabled">পরে →</span>
+    @endif
+</div>
+@endif
 
 @endsection
